@@ -4,18 +4,53 @@
 
 using namespace std;
 
-int ancho_pantalla = 100;
-int alto_pantalla = 100;
+int ancho_pantalla = 30;
+int alto_pantalla = 30;
 const char PUNTERO = '+';
+int posicionX = ancho_pantalla / 2;
+int posicionY = alto_pantalla / 2;
+
+struct figuras {
+};
 
 void gotoxy(int x, int y, char c) {
     COORD coord;
-    coord.X = x;
-    coord.Y = y;
+
+    if (x == -1) {
+        coord.X = ancho_pantalla;
+        posicionX = ancho_pantalla;
+    }
+    else if (x > ancho_pantalla) {
+        coord.X = 1;
+        posicionX = 1;
+    }
+    else {
+        coord.X = x;
+    }
+
+    if (y == -1) {
+        coord.Y = alto_pantalla;
+        posicionY = alto_pantalla;
+    }
+    else if (y > alto_pantalla) {
+        coord.Y = 1;
+        posicionY = 1;
+    }
+    else {
+        coord.Y = y;
+    }
 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+    cout << c;
+}
 
-    cout << c << "(" << x << ", " << y << ")";
+void cuadrado(int lado) {
+
+    for (int i = 0; i < lado; i++) {
+        for (int j = 0; j < lado; j++) {
+            gotoxy(posicionX + j, posicionY + i, PUNTERO);
+        }
+    }
 }
 
 void menu() {
@@ -25,124 +60,56 @@ void menu() {
     cout << "2. Cuadrado\n";
     cout << "3. Rectangulo\n";
     cout << "4. Circulo\n";
-    cout << "Presione Esc para volver a la pantall de dibujo!";
+    cout << "Presione Esc para volver a la pantalla de dibujo!";
 }
 
 int main() {
-    int playerX = ancho_pantalla / 2;
-    int playerY = alto_pantalla / 2;
-
     bool inMenu = false;
 
     while (true) {
         system("cls");
-        gotoxy(playerX, playerY, PUNTERO);
+        gotoxy(posicionX, posicionY, PUNTERO);
 
-        if (inMenu) {
+        if (GetKeyState(VK_F12) & 0x8000) {
             menu();
             char menuKey;
             do {
                 menuKey = _getch();
-            } while (menuKey != '1' && menuKey != '2' && menuKey != '3' && menuKey != '4' && menuKey != VK_ESCAPE);
+            } while (menuKey != '1' && menuKey != '2' && menuKey != 'q' && menuKey != 'Q');
 
-            if(menuKey == '1'){
-                cout<<"Triangulo";
-                inMenu = false;
-            }
-            if(menuKey == '2'){
-                cout<<"Cuadrado";
-                inMenu = false;
-            }
-            if(menuKey == '3'){
-                cout<<"Rectangulo";
-                inMenu = false;
-            }
-            if(menuKey == '4'){
-                cout<<"Circulo";
-                inMenu = false;
-            }
-            if (menuKey == VK_ESCAPE) {
-                inMenu = false;
+            if (menuKey == '1') {
+                cout << "Triangulo";
+            } else if (menuKey == '2') {
+                cout << "Ingrese el lado del cuadrado: ";
+                int ladoCuadrado;
+                cin >> ladoCuadrado;
+                cuadrado(ladoCuadrado);
+            } else if (menuKey == 'q' || menuKey == 'Q') {
+                break;
             }
         }
-        else {
-            if (GetKeyState(VK_F12) & 0x8000) {
-                inMenu = true;
-            }
 
-            if (_kbhit()) {
-                char key = _getch();
-                switch (key) {
-                    case 'a':
-                        //Caso Extremo
-                        // (0,35)
-                        // (0 - 1 + 70 ) % 70
-                        // 69 % 70
-                        // entonces el resto de 69 % 70 es 69
 
-                        //Caso Normal
-                        // (2,35)
-                        // (2 - 1 + 70) % 70
-                        // 71 % 70
-                        // Entonces el resto de 71 % 70 es 1
-
-                        playerX = (playerX - 1 + ancho_pantalla) % ancho_pantalla;
-                        break;
-                    case 'd':
-                        //Caso Extremo
-                        // (69,35)
-                        // (69 + 1) % 70
-                        // 70 % 70
-                        // entonces el resto de 70 % 70 es 0
-
-                        //Caso Normal
-                        // (2,70)
-                        // (2 - 1) % 70
-                        // 71 % 70
-                        // Entonces el resto de 71 % 70 es 1
-
-                        playerX = (playerX + 1) % ancho_pantalla;
-                        break;
-
-                    case 'w':
-                        //Caso Extremo
-                        // (35,0)
-                        // (0 - 1 + 70 ) % 70
-                        // 69 % 70
-                        // entonces el resto de 69 % 70 es 69
-
-                        //Caso Normal
-                        // (2,35)
-                        // (2 - 1 + 70) % 70
-                        // 71 % 70
-                        // Entonces el resto de 71 % 70 es 1
-
-                        playerY = (playerY - 1 + alto_pantalla) % alto_pantalla;
-                        break;
-                    case 's':
-
-                        //Caso Extremo
-                        // (35,69)
-                        // (69 + 1) % 70
-                        // 70 % 70
-                        // entonces el resto de 70 % 70 es 0
-
-                        //Caso Normal
-                        // (2,70)
-                        // (2 - 1) % 70
-                        // 71 % 70
-                        // Entonces el resto de 71 % 70 es 1
-
-                        playerY = (playerY + 1) % alto_pantalla;
-                        break;
-                    case 'q':
-                        return 0;
+        if (_kbhit()) {
+            char key = _getch();
+            switch (key) {
+                case 'a':
+                    posicionX--;
+                    break;
+                case 'd':
+                    posicionX++;
+                    break;
+                case 'w':
+                    posicionY--;
+                    break;
+                case 's':
+                    posicionY++;
+                    break;
+                case 'q':
+                    return 0;
                 }
-            }
         }
-
         Sleep(100);
     }
-
     return 0;
 }
