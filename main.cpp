@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <vector>
 
 using namespace std;
 
@@ -10,8 +11,14 @@ const char PUNTERO = '+';
 int posicionX = ancho_pantalla / 2;
 int posicionY = alto_pantalla / 2;
 
-struct figuras {
+struct Figura {
+    int idFigura;
+    COORD coord;
+    int valor1;
+    int valor2;
 };
+
+vector<Figura> figuras;
 
 void gotoxy(int x, int y, char c) {
     COORD coord;
@@ -21,8 +28,8 @@ void gotoxy(int x, int y, char c) {
         posicionX = ancho_pantalla;
     }
     else if (x > ancho_pantalla) {
-        coord.X = 1;
-        posicionX = 1;
+        coord.X = 0;
+        posicionX = 0;
     }
     else {
         coord.X = x;
@@ -33,22 +40,34 @@ void gotoxy(int x, int y, char c) {
         posicionY = alto_pantalla;
     }
     else if (y > alto_pantalla) {
-        coord.Y = 1;
-        posicionY = 1;
+        coord.Y = 0;
+        posicionY = 0;
     }
     else {
         coord.Y = y;
     }
 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-    cout << c;
+    cout << c << "(" << x << "," << y << ")";
 }
 
-void cuadrado(int lado) {
+void dibujarTriangulo(){
+}
 
-    for (int i = 0; i < lado; i++) {
-        for (int j = 0; j < lado; j++) {
-            gotoxy(posicionX + j, posicionY + i, PUNTERO);
+void dibujarCuadrado(Figura nuevoCuadrado) {
+}
+
+void dibujarRectangulo(){
+}
+
+void dibujarCirculo(){
+}
+
+
+void cargar() {
+    for (const Figura& figura : figuras) {
+        if (figura.idFigura == 2) {
+            dibujarCuadrado(figura);
         }
     }
 }
@@ -60,39 +79,58 @@ void menu() {
     cout << "2. Cuadrado\n";
     cout << "3. Rectangulo\n";
     cout << "4. Circulo\n";
-    cout << "Presione Esc para volver a la pantalla de dibujo!";
+    cout << "Presione Esc para volver a la pantalla de dibujo!\n";
 }
 
 int main() {
     bool inMenu = false;
+    gotoxy(posicionX, posicionY, PUNTERO);
 
     while (true) {
         system("cls");
+        cargar();
         gotoxy(posicionX, posicionY, PUNTERO);
 
-        if (GetKeyState(VK_F12) & 0x8000) {
+        if (inMenu) {
             menu();
             char menuKey;
             do {
                 menuKey = _getch();
-            } while (menuKey != '1' && menuKey != '2' && menuKey != 'q' && menuKey != 'Q');
+            } while (menuKey != '1' && menuKey != '2' && menuKey != '3' && menuKey != '4' && menuKey != VK_ESCAPE);
 
             if (menuKey == '1') {
-                cout << "Triangulo";
-            } else if (menuKey == '2') {
+            }
+            if (menuKey == '2') {
                 cout << "Ingrese el lado del cuadrado: ";
                 int ladoCuadrado;
                 cin >> ladoCuadrado;
-                cuadrado(ladoCuadrado);
-            } else if (menuKey == 'q' || menuKey == 'Q') {
-                break;
+                Figura nuevoCuadrado;
+                nuevoCuadrado.idFigura = 2;
+                nuevoCuadrado.valor1 = ladoCuadrado;
+                nuevoCuadrado.coord.X = posicionX;
+                nuevoCuadrado.coord.Y = posicionY;
+                dibujarCuadrado(nuevoCuadrado);
+                figuras.push_back(nuevoCuadrado);
+                inMenu = false;
+            }
+            if (menuKey == '3') {
+                inMenu = false;
+            }
+            if (menuKey == '4') {
+                inMenu = false;
+            }
+            if (menuKey == VK_ESCAPE) {
+                inMenu = false;
             }
         }
+        else {
+            if (GetKeyState(VK_F12) & 0x8000) {
+                inMenu = true;
+            }
 
-
-        if (_kbhit()) {
-            char key = _getch();
-            switch (key) {
+            if (_kbhit()) {
+                char key = _getch();
+                switch (key) {
                 case 'a':
                     posicionX--;
                     break;
@@ -105,10 +143,10 @@ int main() {
                 case 's':
                     posicionY++;
                     break;
-                case 'q':
-                    return 0;
                 }
+            }
         }
+
         Sleep(100);
     }
     return 0;
