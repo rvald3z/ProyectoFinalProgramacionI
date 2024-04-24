@@ -7,8 +7,8 @@
 
 using namespace std;
 
-int ancho_pantalla = 100;
-int alto_pantalla = 70;
+int ancho_pantalla = 30;
+int alto_pantalla = 30;
 const char PUNTERO = '+';
 int posicionX = ancho_pantalla / 2;
 int posicionY = alto_pantalla / 2;
@@ -51,44 +51,50 @@ void gotoxy(int x, int y, char c) {
 
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 
-    cout << c << "(" << x << "," << y << ")";
+    cout << c;
 }
 
-void dibujarTriangulo(Figura nuevoTriangulo) {
+void dibujarTriangulo(Figura trianguloNuevo) {
+    COORD coord;
+
+    int base = trianguloNuevo.valor1;
+    int altura = base / 2 * sqrt(3);
+
+    coord.X = trianguloNuevo.coord.X;
+    coord.Y = trianguloNuevo.coord.Y;
+
+    for (int i = 0; i < altura; ++i) {
+        gotoxy(coord.X - i, coord.Y + i, PUNTERO);
+        gotoxy(coord.X + i, coord.Y + i, PUNTERO);
+    }
+
+    for (int j = coord.X - altura; j <= coord.X + altura; ++j) {
+        gotoxy(j, coord.Y + altura, PUNTERO);
+    }
 }
+
 
 
 void dibujarCuadrado(Figura nuevoCuadrado) {
     COORD coord;
-    coord.X = (nuevoCuadrado.coord.X - nuevoCuadrado.valor1 / 2 + ancho_pantalla) % ancho_pantalla;
-    coord.Y = (nuevoCuadrado.coord.Y - nuevoCuadrado.valor1 / 2 + alto_pantalla) % alto_pantalla;
-    cout<< "(" << coord.X << "," << coord.Y << ")"<<endl;
-
-    for (int i = 0; i < nuevoCuadrado.valor1; ++i) {
-        for (int j = 0; j < nuevoCuadrado.valor1; ++j) {
-            if (i == 0 || i == nuevoCuadrado.valor1 - 1 || j == 0 || j == nuevoCuadrado.valor1 - 1) {
-                coord.X = (nuevoCuadrado.coord.X - nuevoCuadrado.valor1 / 2 + j + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoCuadrado.coord.Y - nuevoCuadrado.valor1 / 2 + i + alto_pantalla) % alto_pantalla;
-                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-                cout << PUNTERO;
-            }
+    for (int fila = 0; fila < nuevoCuadrado.valor1; ++fila) {
+        for (int columna = 0; columna < nuevoCuadrado.valor1; ++columna) {
+            coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+            coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
+            gotoxy(coord.X, coord.Y, PUNTERO);
         }
     }
 }
 
+
+
 void dibujarRectangulo(Figura nuevoRectangulo) {
     COORD coord;
-    coord.X = (nuevoRectangulo.coord.X - nuevoRectangulo.valor1 / 2 + ancho_pantalla) % ancho_pantalla;
-    coord.Y = (nuevoRectangulo.coord.Y - nuevoRectangulo.valor2 / 2 + alto_pantalla) % alto_pantalla;
-
-    for (int i = 0; i < nuevoRectangulo.valor2; ++i) {
-        for (int j = 0; j < nuevoRectangulo.valor1; ++j) {
-            if (i == 0 || i == nuevoRectangulo.valor2 - 1 || j == 0 || j == nuevoRectangulo.valor1 - 1) {
-                coord.X = (nuevoRectangulo.coord.X - nuevoRectangulo.valor1 / 2 + j + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoRectangulo.coord.Y - nuevoRectangulo.valor2 / 2 + i + alto_pantalla) % alto_pantalla;
-                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-                cout << PUNTERO;
-            }
+    for (int fila = 0; fila < nuevoRectangulo.valor2; ++fila) {
+        for (int columna = 0; columna < nuevoRectangulo.valor1; ++columna) {
+            coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+            coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
+            gotoxy(coord.X, coord.Y, PUNTERO);
         }
     }
 }
@@ -96,6 +102,10 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
 
 void dibujarCirculo(Figura nuevoCirculo) {
 }
+
+
+
+
 
 void cargar() {
     for (const Figura& figura : figuras) {
@@ -113,6 +123,9 @@ void cargar() {
 
 
 void limpiarFiguras() {
+    system("cls");
+    cout<<"Limpiando la pantalla, por favor espere....";
+    Sleep(2000);
     figuras.clear();
 }
 
@@ -141,7 +154,7 @@ int main() {
             char menuKey;
             do {
                 menuKey = _getch();
-            } while (menuKey != '1' && menuKey != '2' && menuKey != '3' && menuKey != '4' && menuKey != VK_ESCAPE);
+            } while (menuKey != '1' && menuKey != '2' && menuKey != '3' && menuKey != '4' &&  menuKey!= '5' && menuKey != VK_ESCAPE);
 
             if (menuKey == '1') {
                 cout << "Ingrese la base del triangulo: ";
@@ -185,7 +198,6 @@ int main() {
                 dibujarRectangulo(nuevoRectangulo);
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
-                inMenu = false;
             }
             if (menuKey == '4') {
                 cout << "Ingrese el radio del circulo: ";
@@ -198,7 +210,6 @@ int main() {
                 nuevoCirculo.coord.Y = posicionY;
                 dibujarCirculo(nuevoCirculo);
                 figuras.push_back(nuevoCirculo);
-                inMenu = false;
                 inMenu = false;
             }
             if (menuKey == '5') {
