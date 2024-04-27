@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1713934630 source:c:\users\ruiva\downloads\miumg\programacion i\proyectofinalprogramacioni\main.cpp
+1714189746 source:c:\users\ruiva\downloads\miumg\programacion i\proyectofinalprogramacioni\main.cpp
 	<iostream>
 	<windows.h>
 	<conio.h>
 	<vector>
-	<cmath>
+	<algorithm>
 

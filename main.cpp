@@ -2,12 +2,11 @@
 #include <windows.h>
 #include <conio.h>
 #include <vector>
-#include <cmath>
-
+#include <algorithm>
 
 using namespace std;
 
-int ancho_pantalla = 30;
+int ancho_pantalla = 110;
 int alto_pantalla = 30;
 const char PUNTERO = '+';
 int posicionX = ancho_pantalla / 2;
@@ -22,54 +21,53 @@ struct Figura {
 
 vector<Figura> figuras;
 
-void gotoxy(int x, int y, char c) {
+void gotoxy(int x, int y, char p, int color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD coord;
 
     if (x == -1) {
         coord.X = ancho_pantalla;
-        posicionX = ancho_pantalla;
-    }
-    else if (x > ancho_pantalla) {
+    } else if (x > ancho_pantalla) {
         coord.X = 0;
-        posicionX = 0;
-    }
-    else {
+    } else {
         coord.X = x;
     }
 
     if (y == -1) {
         coord.Y = alto_pantalla;
-        posicionY = alto_pantalla;
-    }
-    else if (y > alto_pantalla) {
+    } else if (y > alto_pantalla) {
         coord.Y = 0;
-        posicionY = 0;
-    }
-    else {
+    } else {
         coord.Y = y;
     }
 
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-
-    cout << c;
+    SetConsoleCursorPosition(hConsole, coord);
+    SetConsoleTextAttribute(hConsole, color);
+    cout << p;
 }
 
+
 void dibujarTriangulo(Figura trianguloNuevo) {
-    COORD coord;
-
     int base = trianguloNuevo.valor1;
-    int altura = base / 2 * sqrt(3);
-
-    coord.X = trianguloNuevo.coord.X;
-    coord.Y = trianguloNuevo.coord.Y;
+    int altura = trianguloNuevo.valor1;
 
     for (int i = 0; i < altura; ++i) {
-        gotoxy(coord.X - i, coord.Y + i, PUNTERO);
-        gotoxy(coord.X + i, coord.Y + i, PUNTERO);
+        int x1 = (trianguloNuevo.coord.X - i + ancho_pantalla) % ancho_pantalla;
+        int x2 = (trianguloNuevo.coord.X + i + ancho_pantalla) % ancho_pantalla;
+        int y = (trianguloNuevo.coord.Y + i + alto_pantalla) % alto_pantalla;
+
+        if(x1 == x2){
+            gotoxy(x1, y, PUNTERO, 12);
+        } else {
+            gotoxy(x1, y, PUNTERO, 15);
+            gotoxy(x2, y, PUNTERO, 15);
+        }
     }
 
-    for (int j = coord.X - altura; j <= coord.X + altura; ++j) {
-        gotoxy(j, coord.Y + altura, PUNTERO);
+    for (int j = trianguloNuevo.coord.X - altura + 1; j <= trianguloNuevo.coord.X + altura - 1; ++j) {
+        int x = (j + ancho_pantalla) % ancho_pantalla;
+        int y = (trianguloNuevo.coord.Y + altura + alto_pantalla - 1) % alto_pantalla;
+        gotoxy(x, y, PUNTERO, 15);
     }
 }
 
@@ -77,33 +75,73 @@ void dibujarTriangulo(Figura trianguloNuevo) {
 
 void dibujarCuadrado(Figura nuevoCuadrado) {
     COORD coord;
-    for (int fila = 0; fila < nuevoCuadrado.valor1; ++fila) {
-        for (int columna = 0; columna < nuevoCuadrado.valor1; ++columna) {
-            coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-            coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
-            gotoxy(coord.X, coord.Y, PUNTERO);
+    int lado = nuevoCuadrado.valor1;
+
+    for (int fila = 0; fila < lado; ++fila) {
+        for (int columna = 0; columna < lado; ++columna) {
+            if (fila == 0 && columna == 0) {
+                coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                gotoxy(coord.X, coord.Y, PUNTERO, 12);
+            } else if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
+                coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                gotoxy(coord.X, coord.Y, PUNTERO, 15);
+            }
         }
     }
 }
+
+
 
 
 
 void dibujarRectangulo(Figura nuevoRectangulo) {
     COORD coord;
-    for (int fila = 0; fila < nuevoRectangulo.valor2; ++fila) {
-        for (int columna = 0; columna < nuevoRectangulo.valor1; ++columna) {
-            coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-            coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
-            gotoxy(coord.X, coord.Y, PUNTERO);
+    int base = nuevoRectangulo.valor1;
+    int altura = nuevoRectangulo.valor2;
+
+    for (int fila = 0; fila < altura; ++fila) {
+        for (int columna = 0; columna < base; ++columna) {
+            if (fila == 0 && columna == 0) {
+                coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                gotoxy(coord.X, coord.Y, PUNTERO, 12);
+            } else if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
+                coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                gotoxy(coord.X, coord.Y,PUNTERO, 15);
+            }
         }
     }
 }
 
 
+
 void dibujarCirculo(Figura nuevoCirculo) {
+    COORD coord;
+    COORD coordPunto;
+    int radio = nuevoCirculo.valor1;
+    bool flag = false;
+
+    for (int i = -radio; i <= radio; ++i) {
+        for (int j = -radio; j <= radio; ++j) {
+            if (i * i + j * j <= radio * radio + radio/2 && i * i + j * j >= radio * radio - radio/2) {
+
+                if(!flag){
+                    coordPunto.X = nuevoCirculo.coord.X;
+                    coordPunto.Y = nuevoCirculo.coord.Y;
+                    gotoxy(coordPunto.X, coordPunto.Y, PUNTERO, 12);
+                    flag = true;
+                }
+
+                coord.X = (nuevoCirculo.coord.X + j + ancho_pantalla) % ancho_pantalla;
+                coord.Y = (nuevoCirculo.coord.Y + i + alto_pantalla) % alto_pantalla;
+                gotoxy(coord.X, coord.Y, PUNTERO, 15);
+            }
+        }
+    }
 }
-
-
 
 
 
@@ -129,6 +167,23 @@ void limpiarFiguras() {
     figuras.clear();
 }
 
+void borrarFigura(COORD coord) {
+    auto it = find_if(figuras.begin(), figuras.end(), [coord](const Figura& figura) {
+        return figura.coord.X == coord.X && figura.coord.Y == coord.Y;
+    });
+
+    if (it != figuras.end()) {
+        cout << "Lo encontre!";
+        figuras.erase(it);
+        Sleep(1000);
+    } else {
+        cout << "No lo encontre!";
+        Sleep(1000);
+    }
+}
+
+
+
 void menu() {
     system("cls");
     cout << "Seleccione la figura que desea dibujar:\n";
@@ -142,12 +197,12 @@ void menu() {
 
 int main() {
     bool inMenu = false;
-    gotoxy(posicionX, posicionY, PUNTERO);
+    gotoxy(posicionX, posicionY, PUNTERO, 15);
 
     while (true) {
         system("cls");
         cargar();
-        gotoxy(posicionX, posicionY, PUNTERO);
+        gotoxy(posicionX, posicionY, PUNTERO, 15);
 
         if (inMenu) {
             menu();
@@ -165,7 +220,6 @@ int main() {
                 nuevoTriangulo.valor1 = baseTriangulo;
                 nuevoTriangulo.coord.X = posicionX;
                 nuevoTriangulo.coord.Y = posicionY;
-                dibujarTriangulo(nuevoTriangulo);
                 figuras.push_back(nuevoTriangulo);
                 inMenu = false;
             }
@@ -178,7 +232,7 @@ int main() {
                 nuevoCuadrado.valor1 = ladoCuadrado;
                 nuevoCuadrado.coord.X = posicionX;
                 nuevoCuadrado.coord.Y = posicionY;
-                dibujarCuadrado(nuevoCuadrado);
+
                 figuras.push_back(nuevoCuadrado);
                 inMenu = false;
             }
@@ -195,7 +249,6 @@ int main() {
                 nuevoRectangulo.valor2 = altoRectangulo;
                 nuevoRectangulo.coord.X = posicionX;
                 nuevoRectangulo.coord.Y = posicionY;
-                dibujarRectangulo(nuevoRectangulo);
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
             }
@@ -208,7 +261,6 @@ int main() {
                 nuevoCirculo.valor1 = radioCirculo;
                 nuevoCirculo.coord.X = posicionX;
                 nuevoCirculo.coord.Y = posicionY;
-                dibujarCirculo(nuevoCirculo);
                 figuras.push_back(nuevoCirculo);
                 inMenu = false;
             }
@@ -225,8 +277,16 @@ int main() {
                 inMenu = true;
             }
 
+            if (GetKeyState(VK_SHIFT) & 0x8000) {
+                COORD coord;
+                coord.X = posicionX;
+                coord.Y = posicionY;
+                borrarFigura(coord);
+            }
+
             if (_kbhit()) {
                 char key = _getch();
+                key = tolower(key);
                 switch (key) {
                 case 'a':
                     posicionX--;
