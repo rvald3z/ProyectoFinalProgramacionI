@@ -11,6 +11,7 @@ int alto_pantalla = 30;
 const char PUNTERO = '+';
 int posicionX = ancho_pantalla / 2;
 int posicionY = alto_pantalla / 2;
+int opcionSeleccionada = 1;
 
 struct Figura {
     int idFigura;
@@ -20,6 +21,21 @@ struct Figura {
 };
 
 vector<Figura> figuras;
+
+void menu() {
+    cout << "F1-Triangulo\t";
+    cout << "F2-Cuadrado\t";
+    cout << "F3-Rectangulo\t";
+    cout << "F4-Circulo\t" ;
+    cout << "F5-Linea\t";
+    cout << "F6-Rombo\t" ;
+    cout << "F7-Hexagono\t"<<endl;
+    cout << endl;
+    cout << "F8-Elegir Puntero\t";
+    cout << "F9-Limpiar Pantalla\t";
+    cout << "F10-Color Puntero\t";
+    cout << "F12-Grabar Pantalla\t";
+}
 
 void gotoxy(int x, int y, char p, int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -46,7 +62,6 @@ void gotoxy(int x, int y, char p, int color) {
     cout << p;
 }
 
-
 void dibujarTriangulo(Figura trianguloNuevo) {
     int base = trianguloNuevo.valor1;
     int altura = trianguloNuevo.valor1;
@@ -71,8 +86,6 @@ void dibujarTriangulo(Figura trianguloNuevo) {
     }
 }
 
-
-
 void dibujarCuadrado(Figura nuevoCuadrado) {
     COORD coord;
     int lado = nuevoCuadrado.valor1;
@@ -91,10 +104,6 @@ void dibujarCuadrado(Figura nuevoCuadrado) {
         }
     }
 }
-
-
-
-
 
 void dibujarRectangulo(Figura nuevoRectangulo) {
     COORD coord;
@@ -115,8 +124,6 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
         }
     }
 }
-
-
 
 void dibujarCirculo(Figura nuevoCirculo) {
     COORD coord;
@@ -143,8 +150,6 @@ void dibujarCirculo(Figura nuevoCirculo) {
     }
 }
 
-
-
 void cargar() {
     for (const Figura& figura : figuras) {
         if (figura.idFigura == 1) {
@@ -158,7 +163,6 @@ void cargar() {
         }
     }
 }
-
 
 void limpiarFiguras() {
     system("cls");
@@ -182,36 +186,18 @@ void borrarFigura(COORD coord) {
     }
 }
 
-
-
-void menu() {
-    system("cls");
-    cout << "Seleccione la figura que desea dibujar:\n";
-    cout << "1. Triangulo\n";
-    cout << "2. Cuadrado\n";
-    cout << "3. Rectangulo\n";
-    cout << "4. Circulo\n";
-    cout << "5. Limpiar Figuras\n";
-    cout << "Presione Esc para volver a la pantalla de dibujo!\n";
-}
-
 int main() {
     bool inMenu = false;
     gotoxy(posicionX, posicionY, PUNTERO, 15);
-
     while (true) {
         system("cls");
+        menu();
         cargar();
         gotoxy(posicionX, posicionY, PUNTERO, 15);
 
         if (inMenu) {
-            menu();
-            char menuKey;
-            do {
-                menuKey = _getch();
-            } while (menuKey != '1' && menuKey != '2' && menuKey != '3' && menuKey != '4' &&  menuKey!= '5' && menuKey != VK_ESCAPE);
-
-            if (menuKey == '1') {
+            if (opcionSeleccionada == 1) {
+                system("cls");
                 cout << "Ingrese la base del triangulo: ";
                 int baseTriangulo;
                 cin >> baseTriangulo;
@@ -223,7 +209,8 @@ int main() {
                 figuras.push_back(nuevoTriangulo);
                 inMenu = false;
             }
-            if (menuKey == '2') {
+            if (opcionSeleccionada == 2) {
+                system("cls");
                 cout << "Ingrese el lado del cuadrado: ";
                 int ladoCuadrado;
                 cin >> ladoCuadrado;
@@ -236,7 +223,8 @@ int main() {
                 figuras.push_back(nuevoCuadrado);
                 inMenu = false;
             }
-            if (menuKey == '3') {
+            if (opcionSeleccionada == 3) {
+                system("cls");
                 cout << "Ingrese la base del rectangulo: ";
                 int baseRectangulo;
                 cin >> baseRectangulo;
@@ -252,7 +240,8 @@ int main() {
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
             }
-            if (menuKey == '4') {
+            if (opcionSeleccionada == 4) {
+                system("cls");
                 cout << "Ingrese el radio del circulo: ";
                 int radioCirculo;
                 cin >> radioCirculo;
@@ -264,26 +253,92 @@ int main() {
                 figuras.push_back(nuevoCirculo);
                 inMenu = false;
             }
-            if (menuKey == '5') {
-                limpiarFiguras();
+            if (opcionSeleccionada == 5) {
                 inMenu = false;
             }
-            if (menuKey == VK_ESCAPE) {
+            if (opcionSeleccionada == 6) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 7) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 8) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 9) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 10) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 12) {
+                inMenu = false;
+            }
+            if (opcionSeleccionada == 13) {
                 inMenu = false;
             }
         }
         else {
-            if (GetKeyState(VK_F12) & 0x8000) {
+            if (GetKeyState(VK_F1) & 0x8000) {
+                //Triángulo
+                opcionSeleccionada = 1;
                 inMenu = true;
             }
-
-            if (GetKeyState(VK_SHIFT) & 0x8000) {
-                COORD coord;
-                coord.X = posicionX;
-                coord.Y = posicionY;
-                borrarFigura(coord);
+            if (GetKeyState(VK_F2) & 0x8000) {
+                //Cuadrado
+                opcionSeleccionada = 2;
+                inMenu = true;
             }
-
+            if (GetKeyState(VK_F3) & 0x8000) {
+                //Rectángulo
+                opcionSeleccionada = 3;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F4) & 0x8000) {
+                //Circulo
+                opcionSeleccionada = 4;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F5) & 0x8000) {
+                //Linea
+                opcionSeleccionada = 5;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F6) & 0x8000) {
+                //Rombo
+                opcionSeleccionada = 6;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F7) & 0x8000) {
+                //Hexagono
+                opcionSeleccionada = 7;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F8) & 0x8000) {
+                // Elegir Puntero
+                opcionSeleccionada = 8;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F9) & 0x8000) {
+                // Limpiar Pantalla
+                opcionSeleccionada = 9;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F10) & 0x8000) {
+                // Color Puntero
+                opcionSeleccionada = 10;
+                inMenu = true;
+            }
+            if (GetKeyState(VK_F12) & 0x8000) {
+                // Grabar Pantalla
+                opcionSeleccionada = 12;
+                inMenu = true;
+            }
+            if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState(0x41) & 0x8000)) {
+                // Cargar Archivo
+                opcionSeleccionada = 13;
+                inMenu = true;
+            }
             if (_kbhit()) {
                 char key = _getch();
                 key = tolower(key);
