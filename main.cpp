@@ -8,16 +8,20 @@ using namespace std;
 
 int ancho_pantalla = 110;
 int alto_pantalla = 30;
-const char PUNTERO = '+';
+char PUNTERO = '+';
+int COLOR = 15;
 int posicionX = ancho_pantalla / 2;
 int posicionY = alto_pantalla / 2;
 int opcionSeleccionada = 1;
+
 
 struct Figura {
     int idFigura;
     COORD coord;
     int valor1;
     int valor2;
+    char puntero;
+    int color;
 };
 
 vector<Figura> figuras;
@@ -65,6 +69,8 @@ void gotoxy(int x, int y, char p, int color) {
 void dibujarTriangulo(Figura trianguloNuevo) {
     int base = trianguloNuevo.valor1;
     int altura = trianguloNuevo.valor1;
+    char puntero = trianguloNuevo.puntero;
+    int color = trianguloNuevo.color;
 
     for (int i = 0; i < altura; ++i) {
         int x1 = (trianguloNuevo.coord.X - i + ancho_pantalla) % ancho_pantalla;
@@ -72,34 +78,36 @@ void dibujarTriangulo(Figura trianguloNuevo) {
         int y = (trianguloNuevo.coord.Y + i + alto_pantalla) % alto_pantalla;
 
         if(x1 == x2){
-            gotoxy(x1, y, PUNTERO, 12);
+            gotoxy(x1, y, puntero, 12);
         } else {
-            gotoxy(x1, y, PUNTERO, 15);
-            gotoxy(x2, y, PUNTERO, 15);
+            gotoxy(x1, y, puntero, color);
+            gotoxy(x2, y, puntero, color);
         }
     }
 
     for (int j = trianguloNuevo.coord.X - altura + 1; j <= trianguloNuevo.coord.X + altura - 1; ++j) {
         int x = (j + ancho_pantalla) % ancho_pantalla;
         int y = (trianguloNuevo.coord.Y + altura + alto_pantalla - 1) % alto_pantalla;
-        gotoxy(x, y, PUNTERO, 15);
+        gotoxy(x, y, puntero, color);
     }
 }
 
 void dibujarCuadrado(Figura nuevoCuadrado) {
     COORD coord;
     int lado = nuevoCuadrado.valor1;
+    char puntero = nuevoCuadrado.puntero;
+    int color = nuevoCuadrado.color;
 
     for (int fila = 0; fila < lado; ++fila) {
         for (int columna = 0; columna < lado; ++columna) {
             if (fila == 0 && columna == 0) {
                 coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
                 coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, PUNTERO, 12);
+                gotoxy(coord.X, coord.Y, puntero, 12);
             } else if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
                 coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
                 coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, PUNTERO, 15);
+                gotoxy(coord.X, coord.Y, puntero, color);
             }
         }
     }
@@ -109,17 +117,19 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
     COORD coord;
     int base = nuevoRectangulo.valor1;
     int altura = nuevoRectangulo.valor2;
+    char puntero = nuevoRectangulo.puntero;
+    int color = nuevoRectangulo.color;
 
     for (int fila = 0; fila < altura; ++fila) {
         for (int columna = 0; columna < base; ++columna) {
             if (fila == 0 && columna == 0) {
                 coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
                 coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, PUNTERO, 12);
+                gotoxy(coord.X, coord.Y, puntero, 12);
             } else if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
                 coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
                 coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y,PUNTERO, 15);
+                gotoxy(coord.X, coord.Y,puntero, color);
             }
         }
     }
@@ -129,7 +139,9 @@ void dibujarCirculo(Figura nuevoCirculo) {
     COORD coord;
     COORD coordPunto;
     int radio = nuevoCirculo.valor1;
+    char puntero = nuevoCirculo.puntero;
     bool flag = false;
+    int color = nuevoCirculo.color;
 
     for (int i = -radio; i <= radio; ++i) {
         for (int j = -radio; j <= radio; ++j) {
@@ -138,13 +150,13 @@ void dibujarCirculo(Figura nuevoCirculo) {
                 if(!flag){
                     coordPunto.X = nuevoCirculo.coord.X;
                     coordPunto.Y = nuevoCirculo.coord.Y;
-                    gotoxy(coordPunto.X, coordPunto.Y, PUNTERO, 12);
+                    gotoxy(coordPunto.X, coordPunto.Y, puntero, 12);
                     flag = true;
                 }
 
                 coord.X = (nuevoCirculo.coord.X + j + ancho_pantalla) % ancho_pantalla;
                 coord.Y = (nuevoCirculo.coord.Y + i + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, PUNTERO, 15);
+                gotoxy(coord.X, coord.Y, puntero, color);
             }
         }
     }
@@ -206,6 +218,8 @@ int main() {
                 nuevoTriangulo.valor1 = baseTriangulo;
                 nuevoTriangulo.coord.X = posicionX;
                 nuevoTriangulo.coord.Y = posicionY;
+                nuevoTriangulo.puntero = PUNTERO;
+                nuevoTriangulo.color = COLOR;
                 figuras.push_back(nuevoTriangulo);
                 inMenu = false;
             }
@@ -219,7 +233,8 @@ int main() {
                 nuevoCuadrado.valor1 = ladoCuadrado;
                 nuevoCuadrado.coord.X = posicionX;
                 nuevoCuadrado.coord.Y = posicionY;
-
+                nuevoCuadrado.puntero = PUNTERO;
+                nuevoCuadrado.color = COLOR;
                 figuras.push_back(nuevoCuadrado);
                 inMenu = false;
             }
@@ -237,6 +252,7 @@ int main() {
                 nuevoRectangulo.valor2 = altoRectangulo;
                 nuevoRectangulo.coord.X = posicionX;
                 nuevoRectangulo.coord.Y = posicionY;
+                nuevoRectangulo.puntero = PUNTERO;
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
             }
@@ -250,6 +266,7 @@ int main() {
                 nuevoCirculo.valor1 = radioCirculo;
                 nuevoCirculo.coord.X = posicionX;
                 nuevoCirculo.coord.Y = posicionY;
+                nuevoCirculo.puntero = PUNTERO;
                 figuras.push_back(nuevoCirculo);
                 inMenu = false;
             }
@@ -263,14 +280,72 @@ int main() {
                 inMenu = false;
             }
             if (opcionSeleccionada == 8) {
-                inMenu = false;
+                system("cls");
+                cout << "Quieres cambiar el puntero para dibujar? *(si o no)" << endl;
+                string respuesta;
+                cin >> respuesta;
+                if (respuesta == "si" ) {
+                    char nuevoPuntero;
+                    cout << "Digita el caracter que quieres que sea tu puntero?" << endl;
+                    cin >> nuevoPuntero;
+                    PUNTERO = nuevoPuntero;
+                    cout << "Tu puntero ha sido actualizado!" << endl;
+                    cin.get();
+                    inMenu = false;
+                } else {
+                    inMenu = false;
+                }
             }
             if (opcionSeleccionada == 9) {
                 inMenu = false;
             }
             if (opcionSeleccionada == 10) {
-                inMenu = false;
-            }
+                system("cls");
+                int color;
+                cout << "Elige el color para el puntero:" << endl;
+                cout << "1. Rojo" << endl;
+                cout << "2. Azul" << endl;
+                cout << "3. Verde" << endl;
+                cout << "4. Amarillo" << endl;
+                cout << "5. Cian" << endl;
+                cout << "6. Magenta" << endl;
+                cout << "7. Blanco" << endl;
+                cout << "8. Negro" << endl;
+                cin >> color;
+                switch(color){
+                    case 1:
+                        COLOR = 12;
+                        break;
+                    case 2:
+                        COLOR = 9;
+                        break;
+                    case 3:
+                        COLOR = 10;
+                        break;
+                    case 4:
+                        COLOR = 14;
+                        break;
+                    case 5:
+                        COLOR = 11;
+                        break;
+                    case 6:
+                        COLOR = 13;
+                        break;
+                    case 7:
+                        COLOR = 15;
+                        break;
+                    case 8:
+                        COLOR = 0;
+                        break;
+                    default:
+                        cout << "Opción no válida. Se mantendrá el color predeterminado." << endl;
+                        break;
+                }
+
+    cout << "Color del puntero actualizado." << endl;
+    _getch();
+    inMenu = false;
+}
             if (opcionSeleccionada == 12) {
                 inMenu = false;
             }
@@ -338,6 +413,12 @@ int main() {
                 // Cargar Archivo
                 opcionSeleccionada = 13;
                 inMenu = true;
+            }
+            if (GetKeyState(VK_SHIFT) & 0x8000){
+                COORD coord;
+                coord.X = posicionX;
+                coord.Y = posicionY;
+                borrarFigura(coord);
             }
             if (_kbhit()) {
                 char key = _getch();
