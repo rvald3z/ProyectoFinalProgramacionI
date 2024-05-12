@@ -3,6 +3,9 @@
 #include <conio.h>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -14,7 +17,6 @@ int posicionX = ancho_pantalla / 2;
 int posicionY = alto_pantalla / 2;
 int opcionSeleccionada = 1;
 
-
 struct Figura {
     int idFigura;
     COORD coord;
@@ -23,9 +25,7 @@ struct Figura {
     char puntero;
     int color;
 };
-
 vector<Figura> figuras;
-
 void menu() {
     cout << "F1-Triangulo\t";
     cout << "F2-Cuadrado\t";
@@ -40,7 +40,6 @@ void menu() {
     cout << "F10-Color Puntero\t";
     cout << "F12-Grabar Pantalla\t";
 }
-
 void gotoxy(int x, int y, char p, int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD coord;
@@ -65,7 +64,6 @@ void gotoxy(int x, int y, char p, int color) {
     SetConsoleTextAttribute(hConsole, color);
     cout << p;
 }
-
 void dibujarTriangulo(Figura trianguloNuevo) {
     int base = trianguloNuevo.valor1;
     int altura = trianguloNuevo.valor1;
@@ -91,7 +89,6 @@ void dibujarTriangulo(Figura trianguloNuevo) {
         gotoxy(x, y, puntero, color);
     }
 }
-
 void dibujarCuadrado(Figura nuevoCuadrado) {
     COORD coord;
     int lado = nuevoCuadrado.valor1;
@@ -112,7 +109,6 @@ void dibujarCuadrado(Figura nuevoCuadrado) {
         }
     }
 }
-
 void dibujarRectangulo(Figura nuevoRectangulo) {
     COORD coord;
     int base = nuevoRectangulo.valor1;
@@ -134,7 +130,6 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
         }
     }
 }
-
 void dibujarCirculo(Figura nuevoCirculo) {
     COORD coord;
     COORD coordPunto;
@@ -161,7 +156,6 @@ void dibujarCirculo(Figura nuevoCirculo) {
         }
     }
 }
-
 void cargar() {
     for (const Figura& figura : figuras) {
         if (figura.idFigura == 1) {
@@ -175,14 +169,12 @@ void cargar() {
         }
     }
 }
-
 void limpiarFiguras() {
     system("cls");
     cout<<"Limpiando la pantalla, por favor espere....";
     Sleep(2000);
     figuras.clear();
 }
-
 void borrarFigura(COORD coord) {
     auto it = find_if(figuras.begin(), figuras.end(), [coord](const Figura& figura) {
         return figura.coord.X == coord.X && figura.coord.Y == coord.Y;
@@ -206,7 +198,6 @@ int main() {
         menu();
         cargar();
         gotoxy(posicionX, posicionY, PUNTERO, 15);
-
         if (inMenu) {
             if (opcionSeleccionada == 1) {
                 system("cls");
@@ -253,6 +244,7 @@ int main() {
                 nuevoRectangulo.coord.X = posicionX;
                 nuevoRectangulo.coord.Y = posicionY;
                 nuevoRectangulo.puntero = PUNTERO;
+                nuevoRectangulo.color = COLOR;
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
             }
@@ -267,6 +259,7 @@ int main() {
                 nuevoCirculo.coord.X = posicionX;
                 nuevoCirculo.coord.Y = posicionY;
                 nuevoCirculo.puntero = PUNTERO;
+                nuevoCirculo.color = COLOR;
                 figuras.push_back(nuevoCirculo);
                 inMenu = false;
             }
@@ -347,13 +340,88 @@ int main() {
     inMenu = false;
 }
             if (opcionSeleccionada == 12) {
-                inMenu = false;
+                system("cls");
+                string nombreArchivo;
+                string rutaArchivo;
+                string fullPath;
+                cout << "Escribir el nombre del archivo como quieres guardarlo (incluyendo la extensión .txt)" << endl;
+                cin >> nombreArchivo;
+                cout << "Escribir la ruta donde quieres guardar el archivo '" << nombreArchivo << "'" << "(no hace falta escribir '/' al final de la ruta)" << endl;
+                cin >> rutaArchivo;
+                fullPath = rutaArchivo + "/" + nombreArchivo;
+
+                ofstream archivo(fullPath);
+                if (archivo.is_open()) {
+                    for (const Figura& figura : figuras) {
+                        archivo << figura.idFigura << ";" << figura.valor1 << ";" << figura.valor2 << ";" << figura.coord.X << ";" << figura.coord.Y << ";" << figura.puntero << ";" << figura.color << "\n"; // Utiliza "\n" para terminar cada línea
+                    }
+                    archivo.close();
+                    cout << "Figuras guardadas correctamente en el archivo '" << fullPath << "'." << endl;
+                    Sleep(3000);
+                    inMenu = false;
+                } else {
+                    cout << "Error al abrir el archivo para escritura." << endl;
+                    Sleep(3000);
+                    inMenu = false;
+                }
             }
             if (opcionSeleccionada == 13) {
-                inMenu = false;
+                system("cls");
+                string ruta;
+                cout<<"Escribe la ruta del archivo que quieres cargar: "<<endl;
+                cin >> ruta;
+                ifstream archivoLectura(ruta);
+                if (archivoLectura.fail()) {
+                    system("cls");
+                    cout << "El archivo " << "'"<< ruta << "'" << " no fue encontrado o no existe, favor revisar!" << endl;
+                    Sleep(3000);
+                    inMenu = false;
+                } else {
+                    figuras.clear();
+                    string registro;
+                    while (getline(archivoLectura, registro)) {
+                        stringstream token(registro);
+                        string campo;
+                        getline(token, campo, ';');
+                        int idFigura = stoi(campo);
+
+                        getline(token, campo, ';');
+                        int valor1 = stoi(campo);
+
+                        getline(token, campo, ';');
+                        int valor2 = stoi(campo);
+
+                        getline(token, campo, ';');
+                        int coordX = stoi(campo);
+
+                        getline(token, campo, ';');
+                        int coordY = stoi(campo);
+
+                        getline(token, campo, ';');
+                        char puntero = campo[0];
+
+                        getline(token, campo);
+                        int color = stoi(campo);
+
+                        Figura nuevaFigura;
+                        nuevaFigura.idFigura = idFigura;
+                        nuevaFigura.valor1 = valor1;
+                        nuevaFigura.valor2 = valor2;
+                        nuevaFigura.coord.X = coordX;
+                        nuevaFigura.coord.Y = coordY;
+                        nuevaFigura.puntero = puntero;
+                        nuevaFigura.color = color;
+                        figuras.push_back(nuevaFigura);
+                    }
+                    archivoLectura.close();
+                    system("cls");
+                    cout << "Figuras cargadas correctamente desde el archivo: " << ruta << endl;
+                    Sleep(3000);
+                    inMenu = false;
+
+                }
             }
-        }
-        else {
+        } else {
             if (GetKeyState(VK_F1) & 0x8000) {
                 //Triángulo
                 opcionSeleccionada = 1;
@@ -415,6 +483,7 @@ int main() {
                 inMenu = true;
             }
             if (GetKeyState(VK_SHIFT) & 0x8000){
+                //Borrar figura
                 COORD coord;
                 coord.X = posicionX;
                 coord.Y = posicionY;
