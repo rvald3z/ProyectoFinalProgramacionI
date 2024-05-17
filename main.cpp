@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
-#include <string>
 
 using namespace std;
 
@@ -24,6 +23,7 @@ struct Figura {
     int valor2;
     char puntero;
     int color;
+    char orientacion;
 };
 vector<Figura> figuras;
 void menu() {
@@ -44,21 +44,8 @@ void gotoxy(int x, int y, char p, int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD coord;
 
-    if (x == -1) {
-        coord.X = ancho_pantalla;
-    } else if (x > ancho_pantalla) {
-        coord.X = 0;
-    } else {
-        coord.X = x;
-    }
-
-    if (y == -1) {
-        coord.Y = alto_pantalla;
-    } else if (y > alto_pantalla) {
-        coord.Y = 0;
-    } else {
-        coord.Y = y;
-    }
+    coord.X = (ancho_pantalla + x) % ancho_pantalla;
+    coord.Y = (alto_pantalla + y) % alto_pantalla;
 
     SetConsoleCursorPosition(hConsole, coord);
     SetConsoleTextAttribute(hConsole, color);
@@ -132,7 +119,6 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
 }
 void dibujarCirculo(Figura nuevoCirculo) {
     COORD coord;
-    COORD coordPunto;
     int radio = nuevoCirculo.valor1;
     char puntero = nuevoCirculo.puntero;
     bool flag = false;
@@ -143,9 +129,9 @@ void dibujarCirculo(Figura nuevoCirculo) {
             if (i * i + j * j <= radio * radio + radio/2 && i * i + j * j >= radio * radio - radio/2) {
 
                 if(!flag){
-                    coordPunto.X = nuevoCirculo.coord.X;
-                    coordPunto.Y = nuevoCirculo.coord.Y;
-                    gotoxy(coordPunto.X, coordPunto.Y, puntero, 12);
+                    coord.X = nuevoCirculo.coord.X;
+                    coord.Y = nuevoCirculo.coord.Y;
+                    gotoxy(coord.X, coord.Y, puntero, 12);
                     flag = true;
                 }
 
@@ -153,6 +139,90 @@ void dibujarCirculo(Figura nuevoCirculo) {
                 coord.Y = (nuevoCirculo.coord.Y + i + alto_pantalla) % alto_pantalla;
                 gotoxy(coord.X, coord.Y, puntero, color);
             }
+        }
+    }
+}
+void dibujarLinea(Figura nuevaLinea) {
+        COORD coord;
+        int longitud = nuevaLinea.valor1;
+        char puntero = nuevaLinea.puntero;
+        int color = nuevaLinea.color;
+        char orientacion = nuevaLinea.orientacion;
+        coord.X = nuevaLinea.coord.X;
+        coord.Y = nuevaLinea.coord.Y;
+
+        switch (orientacion) {
+            case 72:
+                for (int i = 0; i < longitud; ++i) {
+                    gotoxy(coord.X, coord.Y, puntero, color);
+                    coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (coord.Y - 1 + alto_pantalla) % alto_pantalla;
+                }
+                break;
+            case 80:
+                for (int i = 0; i < longitud; ++i) {
+                    gotoxy(coord.X, coord.Y, puntero, color);
+                    coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (coord.Y + 1 + alto_pantalla) % alto_pantalla;
+                }
+                break;
+            case 77:
+                for (int i = 0; i < longitud; ++i) {
+                    gotoxy(coord.X, coord.Y, puntero, color);
+                    coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (coord.Y + 1 + alto_pantalla) % alto_pantalla;
+                }
+                break;
+            case 75:
+                for (int i = 0; i < longitud; ++i) {
+                    gotoxy(coord.X, coord.Y, puntero, color);
+                    coord.X = (coord.X - 1 + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (coord.Y + 1 + alto_pantalla) % alto_pantalla;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+void dibujarRombo(Figura nuevoRombo) {
+    COORD coord = nuevoRombo.coord;
+    int lado = nuevoRombo.valor1 - 1;
+    char puntero = nuevoRombo.puntero;
+    int color = nuevoRombo.color;
+
+    if (nuevoRombo.orientacion == 80) {
+        for (int i = 0; i <= lado; ++i) {
+            int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
+        }
+        for (int i = 0; i < lado; ++i) {
+            int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y + 2 * lado - i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y + 2 * lado - i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
+        }
+    } else if (nuevoRombo.orientacion == 72) {
+        for (int i = 0; i <= lado; ++i) {
+            int x1 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
+        }
+        for (int i = 0; i < lado; ++i) {
+            int x1 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - 2 * lado + i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y - 2 * lado + i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
         }
     }
 }
@@ -166,6 +236,10 @@ void cargar() {
             dibujarRectangulo(figura);
         } else if (figura.idFigura == 4) {
             dibujarCirculo(figura);
+        } else if (figura.idFigura == 5) {
+            dibujarLinea(figura);
+        } else if (figura.idFigura == 6) {
+            dibujarRombo(figura);
         }
     }
 }
@@ -188,6 +262,35 @@ void borrarFigura(COORD coord) {
         cout << "No lo encontre!";
         Sleep(1000);
     }
+}
+char getOrientacion(){
+    cout << "Selecciona la orientación de la línea (arriba, abajo, derecha, izquierda): ";
+    cin.ignore();
+    char tecla;
+    bool flag = true;
+        while (flag) {
+            tecla = _getch();
+            switch (tecla) {
+                case 72: // Flecha arriba
+                    return 72;
+                    flag = false;
+                    break;
+                case 80: // Flecha abajo
+                    return 80;
+                    flag = false;
+                    break;
+                case 77: // Flecha derecha
+                    return 77;
+                    flag = false;
+                    break;
+                case 75: // Flecha izquierda
+                    return 75;
+                    flag = false;
+                    break;
+                default:
+                    break;
+            }
+        }
 }
 
 int main() {
@@ -264,9 +367,35 @@ int main() {
                 inMenu = false;
             }
             if (opcionSeleccionada == 5) {
+                system("cls");
+                int longitud;
+                cout << "Ingresa la longitud de la línea: ";
+                cin >> longitud;
+                Figura nuevaLinea;
+                nuevaLinea.idFigura = 5;
+                nuevaLinea.valor1 = longitud;
+                nuevaLinea.coord.X = posicionX;
+                nuevaLinea.coord.Y = posicionY;
+                nuevaLinea.color = COLOR;
+                nuevaLinea.puntero = PUNTERO;
+                nuevaLinea.orientacion = getOrientacion();
+                figuras.push_back(nuevaLinea);
                 inMenu = false;
             }
             if (opcionSeleccionada == 6) {
+                system("cls");
+                int lado;
+                cout << "Ingresa el lado del rombo: ";
+                cin >> lado;
+                Figura nuevoRombo;
+                nuevoRombo.idFigura = 6;
+                nuevoRombo.valor1 = lado;
+                nuevoRombo.coord.X = posicionX;
+                nuevoRombo.coord.Y = posicionY;
+                nuevoRombo.color = COLOR;
+                nuevoRombo.puntero = PUNTERO;
+                nuevoRombo.orientacion = getOrientacion();
+                figuras.push_back(nuevoRombo);
                 inMenu = false;
             }
             if (opcionSeleccionada == 7) {
@@ -335,10 +464,10 @@ int main() {
                         break;
                 }
 
-    cout << "Color del puntero actualizado." << endl;
-    _getch();
-    inMenu = false;
-}
+                cout << "Color del puntero actualizado." << endl;
+                _getch();
+                inMenu = false;
+            }
             if (opcionSeleccionada == 12) {
                 system("cls");
                 string nombreArchivo;
