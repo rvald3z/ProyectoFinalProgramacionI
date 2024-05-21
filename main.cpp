@@ -56,24 +56,81 @@ void dibujarTriangulo(Figura trianguloNuevo) {
     int altura = trianguloNuevo.valor1;
     char puntero = trianguloNuevo.puntero;
     int color = trianguloNuevo.color;
+    char orientacion = trianguloNuevo.orientacion;
 
-    for (int i = 0; i < altura; ++i) {
-        int x1 = (trianguloNuevo.coord.X - i + ancho_pantalla) % ancho_pantalla;
-        int x2 = (trianguloNuevo.coord.X + i + ancho_pantalla) % ancho_pantalla;
-        int y = (trianguloNuevo.coord.Y + i + alto_pantalla) % alto_pantalla;
+    COORD coord = trianguloNuevo.coord;
 
-        if(x1 == x2){
-            gotoxy(x1, y, puntero, 12);
-        } else {
-            gotoxy(x1, y, puntero, color);
-            gotoxy(x2, y, puntero, color);
-        }
-    }
+    switch (orientacion) {
+        case 72: // Flecha arriba
+            for (int i = 0; i < altura; ++i) {
+                int x1 = (coord.X - i + ancho_pantalla) % ancho_pantalla;
+                int x2 = (coord.X + i + ancho_pantalla) % ancho_pantalla;
+                int y = (coord.Y - i + alto_pantalla) % alto_pantalla;
 
-    for (int j = trianguloNuevo.coord.X - altura + 1; j <= trianguloNuevo.coord.X + altura - 1; ++j) {
-        int x = (j + ancho_pantalla) % ancho_pantalla;
-        int y = (trianguloNuevo.coord.Y + altura + alto_pantalla - 1) % alto_pantalla;
-        gotoxy(x, y, puntero, color);
+                gotoxy(x1, y, puntero, color);
+                gotoxy(x2, y, puntero, color);
+            }
+
+            for (int j = coord.X - altura + 1; j <= coord.X + altura - 1; ++j) {
+                int x = (j + ancho_pantalla) % ancho_pantalla;
+                int y = (coord.Y - altura + alto_pantalla + 1) % alto_pantalla;
+                gotoxy(x, y, puntero, color);
+            }
+            break;
+
+        case 80: // Flecha abajo
+            for (int i = 0; i < altura; ++i) {
+                int x1 = (coord.X - i + ancho_pantalla) % ancho_pantalla;
+                int x2 = (coord.X + i + ancho_pantalla) % ancho_pantalla;
+                int y = (coord.Y + i + alto_pantalla) % alto_pantalla;
+
+                gotoxy(x1, y, puntero, color);
+                gotoxy(x2, y, puntero, color);
+            }
+
+            for (int j = coord.X - altura + 1; j <= coord.X + altura - 1; ++j) {
+                int x = (j + ancho_pantalla) % ancho_pantalla;
+                int y = (coord.Y + altura + alto_pantalla - 1) % alto_pantalla;
+                gotoxy(x, y, puntero, color);
+            }
+            break;
+
+        case 75: // Flecha izquierda
+            for (int i = 0; i < altura; ++i) {
+                int x = (coord.X - i + ancho_pantalla) % ancho_pantalla;
+                int y1 = (coord.Y - i + alto_pantalla) % alto_pantalla;
+                int y2 = (coord.Y + i + alto_pantalla) % alto_pantalla;
+
+                gotoxy(x, y1, puntero, color);
+                gotoxy(x, y2, puntero, color);
+            }
+
+            for (int j = coord.Y - altura + 1; j <= coord.Y + altura - 1; ++j) {
+                int x = (coord.X - altura + ancho_pantalla + 1) % ancho_pantalla;
+                int y = (j + alto_pantalla) % alto_pantalla;
+                gotoxy(x, y, puntero, color);
+            }
+            break;
+
+        case 77: // Flecha derecha
+            for (int i = 0; i < altura; ++i) {
+                int x = (coord.X + i + ancho_pantalla) % ancho_pantalla;
+                int y1 = (coord.Y - i + alto_pantalla) % alto_pantalla;
+                int y2 = (coord.Y + i + alto_pantalla) % alto_pantalla;
+
+                gotoxy(x, y1, puntero, color);
+                gotoxy(x, y2, puntero, color);
+            }
+
+            for (int j = coord.Y - altura + 1; j <= coord.Y + altura - 1; ++j) {
+                int x = (coord.X + altura + ancho_pantalla - 1) % ancho_pantalla;
+                int y = (j + alto_pantalla) % alto_pantalla;
+                gotoxy(x, y, puntero, color);
+            }
+            break;
+
+        default:
+            break;
     }
 }
 void dibujarCuadrado(Figura nuevoCuadrado) {
@@ -81,19 +138,56 @@ void dibujarCuadrado(Figura nuevoCuadrado) {
     int lado = nuevoCuadrado.valor1;
     char puntero = nuevoCuadrado.puntero;
     int color = nuevoCuadrado.color;
+    char orientacion = nuevoCuadrado.orientacion;
 
-    for (int fila = 0; fila < lado; ++fila) {
-        for (int columna = 0; columna < lado; ++columna) {
-            if (fila == 0 && columna == 0) {
-                coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, puntero, 12);
-            } else if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
-                coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, puntero, color);
+    switch (orientacion) {
+        case 77: // Flecha derecha
+            for (int fila = 0; fila < lado; ++fila) {
+                for (int columna = 0; columna < lado; ++columna) {
+                    coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
             }
-        }
+            break;
+        case 80: // Flecha abajo
+            for (int fila = 0; fila < lado; ++fila) {
+                for (int columna = 0; columna < lado; ++columna) {
+                    coord.X = (nuevoCuadrado.coord.X - columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoCuadrado.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        case 75: // Flecha izquierda
+            for (int fila = 0; fila < lado; ++fila) {
+                for (int columna = 0; columna < lado; ++columna) {
+                    coord.X = (nuevoCuadrado.coord.X - columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoCuadrado.coord.Y - fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        case 72: // Flecha arriba
+            for (int fila = 0; fila < lado; ++fila) {
+                for (int columna = 0; columna < lado; ++columna) {
+                    coord.X = (nuevoCuadrado.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoCuadrado.coord.Y - fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == lado - 1 || columna == 0 || columna == lado - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        default:
+
+            break;
     }
 }
 void dibujarRectangulo(Figura nuevoRectangulo) {
@@ -102,19 +196,55 @@ void dibujarRectangulo(Figura nuevoRectangulo) {
     int altura = nuevoRectangulo.valor2;
     char puntero = nuevoRectangulo.puntero;
     int color = nuevoRectangulo.color;
+    char orientacion = nuevoRectangulo.orientacion;
 
-    for (int fila = 0; fila < altura; ++fila) {
-        for (int columna = 0; columna < base; ++columna) {
-            if (fila == 0 && columna == 0) {
-                coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y, puntero, 12);
-            } else if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
-                coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
-                coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
-                gotoxy(coord.X, coord.Y,puntero, color);
+    switch (orientacion) {
+        case 77: // Flecha derecha
+            for (int fila = 0; fila < altura; ++fila) {
+                for (int columna = 0; columna < base; ++columna) {
+                    coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
             }
-        }
+            break;
+        case 80: // Flecha abajo
+            for (int fila = 0; fila < altura; ++fila) {
+                for (int columna = 0; columna < base; ++columna) {
+                    coord.X = (nuevoRectangulo.coord.X - columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoRectangulo.coord.Y + fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        case 75: // Flecha izquierda
+            for (int fila = 0; fila < altura; ++fila) {
+                for (int columna = 0; columna < base; ++columna) {
+                    coord.X = (nuevoRectangulo.coord.X - columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoRectangulo.coord.Y - fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        case 72: // Flecha arriba
+            for (int fila = 0; fila < altura; ++fila) {
+                for (int columna = 0; columna < base; ++columna) {
+                    coord.X = (nuevoRectangulo.coord.X + columna + ancho_pantalla) % ancho_pantalla;
+                    coord.Y = (nuevoRectangulo.coord.Y - fila + alto_pantalla) % alto_pantalla;
+                    if (fila == 0 || fila == altura - 1 || columna == 0 || columna == base - 1) {
+                        gotoxy(coord.X, coord.Y, puntero, color);
+                    }
+                }
+            }
+            break;
+        default:
+            break;
     }
 }
 void dibujarCirculo(Figura nuevoCirculo) {
@@ -152,28 +282,28 @@ void dibujarLinea(Figura nuevaLinea) {
         coord.Y = nuevaLinea.coord.Y;
 
         switch (orientacion) {
-            case 72:
+            case 72: // Flecha arriba
                 for (int i = 0; i < longitud; ++i) {
                     gotoxy(coord.X, coord.Y, puntero, color);
                     coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
                     coord.Y = (coord.Y - 1 + alto_pantalla) % alto_pantalla;
                 }
                 break;
-            case 80:
+            case 80: // Flecha abajo
                 for (int i = 0; i < longitud; ++i) {
                     gotoxy(coord.X, coord.Y, puntero, color);
                     coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
                     coord.Y = (coord.Y + 1 + alto_pantalla) % alto_pantalla;
                 }
                 break;
-            case 77:
+            case 77: // Flecha derecha
                 for (int i = 0; i < longitud; ++i) {
                     gotoxy(coord.X, coord.Y, puntero, color);
                     coord.X = (coord.X + 1 + ancho_pantalla) % ancho_pantalla;
                     coord.Y = (coord.Y + 1 + alto_pantalla) % alto_pantalla;
                 }
                 break;
-            case 75:
+            case 75: // Flecha izquierda
                 for (int i = 0; i < longitud; ++i) {
                     gotoxy(coord.X, coord.Y, puntero, color);
                     coord.X = (coord.X - 1 + ancho_pantalla) % ancho_pantalla;
@@ -190,7 +320,7 @@ void dibujarRombo(Figura nuevoRombo) {
     char puntero = nuevoRombo.puntero;
     int color = nuevoRombo.color;
 
-    if (nuevoRombo.orientacion == 80) {
+    if (nuevoRombo.orientacion == 80) { // Flecha abajo
         for (int i = 0; i <= lado; ++i) {
             int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
             int y1 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
@@ -207,7 +337,7 @@ void dibujarRombo(Figura nuevoRombo) {
             gotoxy(x1, y1, puntero, color);
             gotoxy(x2, y2, puntero, color);
         }
-    } else if (nuevoRombo.orientacion == 72) {
+    } else if (nuevoRombo.orientacion == 72) { // Flecha arriba
         for (int i = 0; i <= lado; ++i) {
             int x1 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
             int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
@@ -226,6 +356,8 @@ void dibujarRombo(Figura nuevoRombo) {
         }
     }
 }
+void dibujarHexagono(Figura nuevoHexagono) {
+}
 void cargar() {
     for (const Figura& figura : figuras) {
         if (figura.idFigura == 1) {
@@ -240,6 +372,8 @@ void cargar() {
             dibujarLinea(figura);
         } else if (figura.idFigura == 6) {
             dibujarRombo(figura);
+        } else if (figura.idFigura == 7) {
+            dibujarHexagono(figura);
         }
     }
 }
@@ -249,23 +383,7 @@ void limpiarFiguras() {
     Sleep(2000);
     figuras.clear();
 }
-void borrarFigura(COORD coord) {
-    auto it = find_if(figuras.begin(), figuras.end(), [coord](const Figura& figura) {
-        return figura.coord.X == coord.X && figura.coord.Y == coord.Y;
-    });
-
-    if (it != figuras.end()) {
-        cout << "Lo encontre!";
-        figuras.erase(it);
-        Sleep(1000);
-    } else {
-        cout << "No lo encontre!";
-        Sleep(1000);
-    }
-}
 char getOrientacion(){
-    cout << "Selecciona la orientación de la línea (arriba, abajo, derecha, izquierda): ";
-    cin.ignore();
     char tecla;
     bool flag = true;
         while (flag) {
@@ -314,6 +432,9 @@ int main() {
                 nuevoTriangulo.coord.Y = posicionY;
                 nuevoTriangulo.puntero = PUNTERO;
                 nuevoTriangulo.color = COLOR;
+                cout << "Selecciona la orientación del triangulo (arriba, abajo, derecha, izquierda): ";
+                cin.ignore();
+                nuevoTriangulo.orientacion = getOrientacion();
                 figuras.push_back(nuevoTriangulo);
                 inMenu = false;
             }
@@ -329,6 +450,9 @@ int main() {
                 nuevoCuadrado.coord.Y = posicionY;
                 nuevoCuadrado.puntero = PUNTERO;
                 nuevoCuadrado.color = COLOR;
+                cout << "Selecciona la orientación del cuadrado (arriba, abajo, derecha, izquierda): ";
+                cin.ignore();
+                nuevoCuadrado.orientacion = getOrientacion();
                 figuras.push_back(nuevoCuadrado);
                 inMenu = false;
             }
@@ -348,6 +472,9 @@ int main() {
                 nuevoRectangulo.coord.Y = posicionY;
                 nuevoRectangulo.puntero = PUNTERO;
                 nuevoRectangulo.color = COLOR;
+                cout << "Selecciona la orientación del rectangulo (arriba, abajo, derecha, izquierda): ";
+                cin.ignore();
+                nuevoRectangulo.orientacion = getOrientacion();
                 figuras.push_back(nuevoRectangulo);
                 inMenu = false;
             }
@@ -378,6 +505,8 @@ int main() {
                 nuevaLinea.coord.Y = posicionY;
                 nuevaLinea.color = COLOR;
                 nuevaLinea.puntero = PUNTERO;
+                cout << "Selecciona la orientación de la línea (arriba, abajo, derecha, izquierda): ";
+                cin.ignore();
                 nuevaLinea.orientacion = getOrientacion();
                 figuras.push_back(nuevaLinea);
                 inMenu = false;
@@ -394,11 +523,28 @@ int main() {
                 nuevoRombo.coord.Y = posicionY;
                 nuevoRombo.color = COLOR;
                 nuevoRombo.puntero = PUNTERO;
+                cout << "Selecciona la orientación del rombo (arriba, abajo): ";
+                cin.ignore();
                 nuevoRombo.orientacion = getOrientacion();
                 figuras.push_back(nuevoRombo);
                 inMenu = false;
             }
             if (opcionSeleccionada == 7) {
+                system("cls");
+                int lado;
+                cout << "Ingresa el lado del hexagono: ";
+                cin >> lado;
+                Figura nuevoHexagono;
+                nuevoHexagono.idFigura = 7;
+                nuevoHexagono.valor1 = lado;
+                nuevoHexagono.coord.X = posicionX;
+                nuevoHexagono.coord.Y = posicionY;
+                nuevoHexagono.color = COLOR;
+                nuevoHexagono.puntero = PUNTERO;
+                cout << "Selecciona la orientación del hexagono (arriba, abajo): ";
+                cin.ignore();
+                nuevoHexagono.orientacion = getOrientacion();
+                figuras.push_back(nuevoHexagono);
                 inMenu = false;
             }
             if (opcionSeleccionada == 8) {
@@ -610,13 +756,6 @@ int main() {
                 // Cargar Archivo
                 opcionSeleccionada = 13;
                 inMenu = true;
-            }
-            if (GetKeyState(VK_SHIFT) & 0x8000){
-                //Borrar figura
-                COORD coord;
-                coord.X = posicionX;
-                coord.Y = posicionY;
-                borrarFigura(coord);
             }
             if (_kbhit()) {
                 char key = _getch();
