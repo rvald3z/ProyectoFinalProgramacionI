@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ struct Figura {
     char orientacion;
 };
 vector<Figura> figuras;
+
 void menu() {
     cout << "F1-Triangulo\t";
     cout << "F2-Cuadrado\t";
@@ -39,6 +41,8 @@ void menu() {
     cout << "F9-Limpiar Pantalla\t";
     cout << "F10-Color Puntero\t";
     cout << "F12-Grabar Pantalla\t";
+    cout << endl;
+    cout << "CTRL + A-Cargar Archivo\t"
 }
 void gotoxy(int x, int y, char p, int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -619,16 +623,21 @@ int main() {
                 string nombreArchivo;
                 string rutaArchivo;
                 string fullPath;
-                cout << "Escribir el nombre del archivo como quieres guardarlo (incluyendo la extensión .txt)" << endl;
-                cin >> nombreArchivo;
-                cout << "Escribir la ruta donde quieres guardar el archivo '" << nombreArchivo << "'" << "(no hace falta escribir '/' al final de la ruta)" << endl;
-                cin >> rutaArchivo;
-                fullPath = rutaArchivo + "/" + nombreArchivo;
 
-                ofstream archivo(fullPath);
+                cout << "Escribir el nombre del archivo como quieres guardarlo (incluyendo la extensión .txt): ";
+                cin >> nombreArchivo;
+                cout << "Escribir la ruta donde quieres guardar el archivo '" << nombreArchivo << "' (no hace falta escribir '/' al final de la ruta): ";
+                cin >> rutaArchivo;
+
+                fullPath = rutaArchivo + "/" + nombreArchivo;
+                cout << "Ruta completa del archivo: " << fullPath << endl;
+
+                ofstream archivo;
+                archivo.open(fullPath, ios::out);
+
                 if (archivo.is_open()) {
                     for (const Figura& figura : figuras) {
-                        archivo << figura.idFigura << ";" << figura.valor1 << ";" << figura.valor2 << ";" << figura.coord.X << ";" << figura.coord.Y << ";" << figura.puntero << ";" << figura.color << "\n"; // Utiliza "\n" para terminar cada línea
+                        archivo << figura.idFigura << ";" << figura.valor1 << ";" << figura.valor2 << ";" << figura.coord.X << ";" << figura.coord.Y << ";" << figura.puntero << ";" << figura.color << ";" << figura.orientacion <<"\n";
                     }
                     archivo.close();
                     cout << "Figuras guardadas correctamente en el archivo '" << fullPath << "'." << endl;
@@ -636,6 +645,8 @@ int main() {
                     inMenu = false;
                 } else {
                     cout << "Error al abrir el archivo para escritura." << endl;
+                    cout << "No se pudieron guardas las figuras en '" << fullPath << "'." << endl;
+                    system("pause");
                     Sleep(3000);
                     inMenu = false;
                 }
@@ -645,9 +656,11 @@ int main() {
                 string ruta;
                 cout<<"Escribe la ruta del archivo que quieres cargar: "<<endl;
                 cin >> ruta;
-                ifstream archivoLectura(ruta);
+                ifstream archivoLectura;
+                archivoLectura.open(ruta, ios::in);
                 if (archivoLectura.fail()) {
                     system("cls");
+                    cout<<ruta;
                     cout << "El archivo " << "'"<< ruta << "'" << " no fue encontrado o no existe, favor revisar!" << endl;
                     Sleep(3000);
                     inMenu = false;
@@ -675,8 +688,11 @@ int main() {
                         getline(token, campo, ';');
                         char puntero = campo[0];
 
-                        getline(token, campo);
+                        getline(token, campo, ';');
                         int color = stoi(campo);
+
+                        getline(token, campo);
+                        char orientacion = campo[0];
 
                         Figura nuevaFigura;
                         nuevaFigura.idFigura = idFigura;
@@ -686,6 +702,7 @@ int main() {
                         nuevaFigura.coord.Y = coordY;
                         nuevaFigura.puntero = puntero;
                         nuevaFigura.color = color;
+                        nuevaFigura.orientacion = orientacion;
                         figuras.push_back(nuevaFigura);
                     }
                     archivoLectura.close();
