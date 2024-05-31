@@ -42,7 +42,7 @@ void menu() {
     cout << "F10-Color Puntero\t";
     cout << "F12-Grabar Pantalla\t";
     cout << endl;
-    cout << "CTRL + A-Cargar Archivo\t"
+    cout << "CTRL + A-Cargar Archivo\t";
 }
 void gotoxy(int x, int y, char p, int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -361,6 +361,57 @@ void dibujarRombo(Figura nuevoRombo) {
     }
 }
 void dibujarHexagono(Figura nuevoHexagono) {
+    COORD coord = nuevoHexagono.coord;
+    int lado = nuevoHexagono.valor1 - 1;
+    char puntero = nuevoHexagono.puntero;
+    int color = nuevoHexagono.color;
+    char orientacion = nuevoHexagono.orientacion;
+
+    if(orientacion == 72){
+        for (int i = 0; i <= lado; ++i) {
+        int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+        int y1 = ((coord.Y - 3*lado + i + alto_pantalla) % alto_pantalla);
+        int x2 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+        int y2 = ((coord.Y - 3*lado + i + alto_pantalla) % alto_pantalla);
+        gotoxy(x1, y1, puntero, color);
+        gotoxy(x2, y2, puntero, color);
+        }
+
+        for (int i = 0; i <= lado; ++i) {
+            int x1 = ((coord.X - lado + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - 2*lado + i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X + lado + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y - 2*lado + i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
+        }
+
+        for (int i = 0; i <= lado; ++i) {
+            int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
+    }
+    } else if (orientacion == 77) {
+        for (int i = 0; i <= lado; ++i) {
+            int x = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            int y2 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
+            gotoxy(x, y1, puntero, color);
+            gotoxy(x, y2, puntero, color);
+        }
+
+        for (int i = 0; i <= lado; ++i) {
+            int x = ((coord.X + 3*lado - i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
+            int y2 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
+            gotoxy(x, y1, puntero, color);
+            gotoxy(x, y2, puntero, color);
+        }
+    }
+
 }
 void cargar() {
     for (const Figura& figura : figuras) {
@@ -436,7 +487,7 @@ int main() {
                 nuevoTriangulo.coord.Y = posicionY;
                 nuevoTriangulo.puntero = PUNTERO;
                 nuevoTriangulo.color = COLOR;
-                cout << "Selecciona la orientación del triangulo (arriba, abajo, derecha, izquierda): ";
+                cout << "Selecciona la orientaciï¿½n del triangulo (arriba, abajo, derecha, izquierda): ";
                 cin.ignore();
                 nuevoTriangulo.orientacion = getOrientacion();
                 figuras.push_back(nuevoTriangulo);
@@ -454,7 +505,7 @@ int main() {
                 nuevoCuadrado.coord.Y = posicionY;
                 nuevoCuadrado.puntero = PUNTERO;
                 nuevoCuadrado.color = COLOR;
-                cout << "Selecciona la orientación del cuadrado (arriba, abajo, derecha, izquierda): ";
+                cout << "Selecciona la orientaciï¿½n del cuadrado (arriba, abajo, derecha, izquierda): ";
                 cin.ignore();
                 nuevoCuadrado.orientacion = getOrientacion();
                 figuras.push_back(nuevoCuadrado);
@@ -476,7 +527,7 @@ int main() {
                 nuevoRectangulo.coord.Y = posicionY;
                 nuevoRectangulo.puntero = PUNTERO;
                 nuevoRectangulo.color = COLOR;
-                cout << "Selecciona la orientación del rectangulo (arriba, abajo, derecha, izquierda): ";
+                cout << "Selecciona la orientaciï¿½n del rectangulo (arriba, abajo, derecha, izquierda): ";
                 cin.ignore();
                 nuevoRectangulo.orientacion = getOrientacion();
                 figuras.push_back(nuevoRectangulo);
@@ -500,7 +551,7 @@ int main() {
             if (opcionSeleccionada == 5) {
                 system("cls");
                 int longitud;
-                cout << "Ingresa la longitud de la línea: ";
+                cout << "Ingresa la longitud de la lï¿½nea: ";
                 cin >> longitud;
                 Figura nuevaLinea;
                 nuevaLinea.idFigura = 5;
@@ -509,7 +560,7 @@ int main() {
                 nuevaLinea.coord.Y = posicionY;
                 nuevaLinea.color = COLOR;
                 nuevaLinea.puntero = PUNTERO;
-                cout << "Selecciona la orientación de la línea (arriba, abajo, derecha, izquierda): ";
+                cout << "Selecciona la orientaciï¿½n de la lï¿½nea (arriba, abajo, derecha, izquierda): ";
                 cin.ignore();
                 nuevaLinea.orientacion = getOrientacion();
                 figuras.push_back(nuevaLinea);
@@ -527,7 +578,7 @@ int main() {
                 nuevoRombo.coord.Y = posicionY;
                 nuevoRombo.color = COLOR;
                 nuevoRombo.puntero = PUNTERO;
-                cout << "Selecciona la orientación del rombo (arriba, abajo): ";
+                cout << "Selecciona la orientaciï¿½n del rombo (arriba, abajo): ";
                 cin.ignore();
                 nuevoRombo.orientacion = getOrientacion();
                 figuras.push_back(nuevoRombo);
@@ -545,7 +596,7 @@ int main() {
                 nuevoHexagono.coord.Y = posicionY;
                 nuevoHexagono.color = COLOR;
                 nuevoHexagono.puntero = PUNTERO;
-                cout << "Selecciona la orientación del hexagono (arriba, abajo): ";
+                cout << "Selecciona la orientaciï¿½n del hexagono (arriba, derecha): ";
                 cin.ignore();
                 nuevoHexagono.orientacion = getOrientacion();
                 figuras.push_back(nuevoHexagono);
@@ -610,7 +661,7 @@ int main() {
                         COLOR = 0;
                         break;
                     default:
-                        cout << "Opción no válida. Se mantendrá el color predeterminado." << endl;
+                        cout << "Opciï¿½n no vï¿½lida. Se mantendrï¿½ el color predeterminado." << endl;
                         break;
                 }
 
@@ -624,7 +675,7 @@ int main() {
                 string rutaArchivo;
                 string fullPath;
 
-                cout << "Escribir el nombre del archivo como quieres guardarlo (incluyendo la extensión .txt): ";
+                cout << "Escribir el nombre del archivo como quieres guardarlo (incluyendo la extensiï¿½n .txt): ";
                 cin >> nombreArchivo;
                 cout << "Escribir la ruta donde quieres guardar el archivo '" << nombreArchivo << "' (no hace falta escribir '/' al final de la ruta): ";
                 cin >> rutaArchivo;
@@ -715,7 +766,7 @@ int main() {
             }
         } else {
             if (GetKeyState(VK_F1) & 0x8000) {
-                //Triángulo
+                //Triï¿½ngulo
                 opcionSeleccionada = 1;
                 inMenu = true;
             }
@@ -725,7 +776,7 @@ int main() {
                 inMenu = true;
             }
             if (GetKeyState(VK_F3) & 0x8000) {
-                //Rectángulo
+                //Rectï¿½ngulo
                 opcionSeleccionada = 3;
                 inMenu = true;
             }
