@@ -177,8 +177,6 @@ void getOrientacion(): Función para obtener la orientación de una figura.
 
 - `#include <vector>`: Esta es una librería estándar de C++ que proporciona la clase `std::vector`, que es una implementación de un contenedor dinámico de elementos. Permite almacenar y manipular colecciones de objetos de manera dinámica.
 
-- `#include <algorithm>`: Esta librería estándar de C++ proporciona varias funciones para realizar operaciones en contenedores, como ordenar elementos, buscar elementos, etc. Algunas funciones comunes incluyen `std::sort`, `std::find`, `std::count`, entre otras.
-
 - `#include <fstream>`: Esta librería estándar de C++ proporciona clases y funciones para realizar operaciones de entrada y salida de archivos. Contiene las clases `std::ifstream` y `std::ofstream` para leer y escribir archivos, respectivamente.
 
 - `#include <sstream>`: Esta librería estándar de C++ proporciona clases y funciones para realizar operaciones de entrada y salida en cadenas de texto. Contiene la clase `std::stringstream`, que permite leer y escribir datos en un `std::string` como si fuera un flujo de entrada o salida.
