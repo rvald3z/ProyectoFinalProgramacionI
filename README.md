@@ -56,7 +56,7 @@ Al seleccionar la orientación de una figura, utiliza las siguientes teclas:
 - F12 - Grabar Pantalla: Guarda la disposición actual de las figuras en un archivo.
 - CTRL + A - Cargar Archivo: Carga el archivo con extensión .txt para mostrar en pantalla.
 
-# Manual de Tecnico del Programa de Dibujo de Figuras
+# Manual Tecnico del Programa de Dibujo de Figuras
 
 ## Introduccion
 
