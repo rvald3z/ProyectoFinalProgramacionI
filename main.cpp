@@ -40,7 +40,7 @@ void menu() {
     cout << "F8-Elegir Puntero\t";
     cout << "F9-Limpiar Pantalla\t";
     cout << "F10-Color Puntero\t";
-    cout << "F12-Grabar Pantalla\t";
+    cout << "F12-Grabar Pantalla\t"<<endl;
     cout << endl;
     cout << "CTRL + A-Cargar Archivo\t";
 }
@@ -367,7 +367,7 @@ void dibujarHexagono(Figura nuevoHexagono) {
     int color = nuevoHexagono.color;
     char orientacion = nuevoHexagono.orientacion;
 
-    if(orientacion == 72){
+    if(orientacion == 72){ // Flecha arriba
         for (int i = 0; i <= lado; ++i) {
         int x1 = ((coord.X - i + ancho_pantalla) % ancho_pantalla);
         int y1 = ((coord.Y - 3*lado + i + alto_pantalla) % alto_pantalla);
@@ -394,13 +394,22 @@ void dibujarHexagono(Figura nuevoHexagono) {
             gotoxy(x1, y1, puntero, color);
             gotoxy(x2, y2, puntero, color);
     }
-    } else if (orientacion == 77) {
+    } else if (orientacion == 77) { // Flecha derecha
         for (int i = 0; i <= lado; ++i) {
             int x = ((coord.X + i + ancho_pantalla) % ancho_pantalla);
             int y1 = ((coord.Y - i + alto_pantalla) % alto_pantalla);
             int y2 = ((coord.Y + i + alto_pantalla) % alto_pantalla);
             gotoxy(x, y1, puntero, color);
             gotoxy(x, y2, puntero, color);
+        }
+
+        for (int i = 0; i <= lado; ++i) {
+            int x1 = ((coord.X + lado + i + ancho_pantalla) % ancho_pantalla);
+            int y1 = ((coord.Y - lado + alto_pantalla) % alto_pantalla);
+            int x2 = ((coord.X + lado + i + ancho_pantalla) % ancho_pantalla);
+            int y2 = ((coord.Y + lado + alto_pantalla) % alto_pantalla);
+            gotoxy(x1, y1, puntero, color);
+            gotoxy(x2, y2, puntero, color);
         }
 
         for (int i = 0; i <= lado; ++i) {
@@ -411,7 +420,6 @@ void dibujarHexagono(Figura nuevoHexagono) {
             gotoxy(x, y2, puntero, color);
         }
     }
-
 }
 void cargar() {
     for (const Figura& figura : figuras) {
